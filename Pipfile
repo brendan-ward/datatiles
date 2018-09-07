@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+rasterio = ">1.0"
+mercantile = "*"
+pillow = "*"
+numpy = "*"
+pymbtiles = "*"
+click = "*"
+progress = "*"
+
+[dev-packages]
+pylint = "*"
+pytest = "*"
+pytest-cov = "*"
+black = ">=18.6b4"
+
+[requires]
+python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
