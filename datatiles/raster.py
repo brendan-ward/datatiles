@@ -1,5 +1,6 @@
 """Raster file processing functions"""
 
+from collections import defaultdict
 import math
 import os
 import numpy as np
@@ -145,3 +146,31 @@ def unique_to_indexed(arr):
         out[arr == unique[i]] = i
 
     return out, unique
+
+
+def has_matching_attributes(rasters, attribute):
+    """Validate that all input rasters have the same value for the attribute
+    
+    Parameters
+    ----------
+    rasters : iterable of rasterio.DatasetReaders
+    attribute : string
+        name of attribute to test
+    
+    Returns
+    -------
+
+    bool: True if all rasters match, False otherwise
+    """
+
+    # atts = ("crs", "transform", "width", "height")
+    # att_values = defaultdict(set)
+    value = None
+    for src in rasters:
+        next_value = str(getattr(src, att))
+        if value is None:
+            value = next_value
+        elif value != next_value:
+            return False
+
+    return True

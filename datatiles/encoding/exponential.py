@@ -3,6 +3,28 @@
 import numpy as np
 
 
+def encode(values, base=10):
+    """Encode values using exponential method.
+    
+    Parameters
+    ----------
+    values : list-like of values to encode
+    base : int, optional
+            base to use for encoding (default 10); base is raised to a value for each array
+            added to the encoder.  All values of the array to encode must fit between 0 and base.
+
+    Returns
+    -------
+    int : encoded value
+    """
+
+    encoded = values[0]
+    for i, value in values[1:]:
+        encoded += value * (base ** i + 1)
+
+    return encoded
+
+
 class ExponentialEncoder(object):
     """
     Use exponential encoding method to iteratively encode and decode 2D arrays.
