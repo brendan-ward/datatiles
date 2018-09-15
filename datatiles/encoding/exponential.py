@@ -1,28 +1,78 @@
 """Exponential encoding and decoding classes"""
 
+import collections
 import numpy as np
 
 
 def encode(values, base=10):
     """Encode values using exponential method.
+
+    Note: this is not an efficient method for encoding many values; use ExponentialEncoder instead.
     
     Parameters
     ----------
     values : list-like of values to encode
-    base : int, optional
-            base to use for encoding (default 10); base is raised to a value for each array
-            added to the encoder.  All values of the array to encode must fit between 0 and base.
+    base : unsigned int, optional (default: 10)
+        base is raised to a value for each array added to the encoder.
+        All values of the array to encode must fit between 0 and base.
+        Must be > 1.
 
     Returns
     -------
     int : encoded value
     """
 
-    encoded = values[0]
-    for i, value in values[1:]:
-        encoded += value * (base ** i + 1)
+    if not isinstance(values, collections.Iterable):
+        raise ValueError("values must be an iterable")
+
+    if not len(values):
+        raise ValueError("values must be non-empty")
+
+    if base <= 1:
+        raise ValueError("base must be larger than 1")
+
+    if max(values) > base:
+        raise ValueError("base must be larger than the max value")
+
+    encoded = 0
+    for i, value in enumerate(values):
+        encoded += value * (base ** i)
 
     return encoded
+
+
+def decode(encoded, base=10, size=1):
+    """Decode the values previously encoded using base.
+    
+    Parameters
+    ----------
+    encoded : int
+        encoded value
+    base : int, optional (default: 10)
+        base is raised to a value for each array added to the encoder.
+        All values of the array to encode must fit between 0 and base.
+    size : int, optional (default: 1)
+        number of values to decode.  Must be equal to the number of values that were encoded.
+    
+    Returns
+    -------
+    list of decoded values
+    """
+
+    values = []
+    for i in range(size - 1, -1, -1):
+        if i == 0:
+            decoded = encoded
+        else:
+            factor = base ** i
+            remainder = encoded % factor
+            decoded = (encoded - remainder) / factor
+            encoded = remainder
+
+        values.append(decoded)
+
+    values.reverse()
+    return values
 
 
 class ExponentialEncoder(object):
@@ -71,9 +121,12 @@ class ExponentialEncoder(object):
         # TODO: nodata filling?
 
         if self._index == 0:
-            self._encoded = arr.copy()
+            self._encoded = arr.copy().astype(self._dtype)
 
         else:
+            if arr.shape != self._encoded.shape:
+                raise ValueError("all arrays must be the same shape to encode")
+
             self._encoded += arr * (self._base ** self._index)
 
         self._index += 1

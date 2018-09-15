@@ -9,7 +9,7 @@ from PIL import Image
 import rasterio
 from rasterio.dtypes import get_minimum_dtype
 
-from rgb import to_rgb_array, to_rgba_array
+from datatiles.rgb import to_rgb_array, to_rgba_array
 
 
 MAX_VALUE = {"L": 255, "RGB": 16777215, "RGBA": 4294967295}
