@@ -91,6 +91,14 @@ def read_tiles(src, min_zoom=0, max_zoom=None, tile_size=256):
         width = tile_size - left_offset - right_offset
         height = tile_size - top_offset - bottom_offset
 
+        if not (width > 0 and height > 0):
+            # No data can be read within an window that has no width or height
+            # so return a blank tile
+            data = np.empty((1, tile_size, tile_size), dtype=vrt.dtypes[0])
+            data.fill(vrt.nodata)
+
+            return data[0], dst_transform
+
         data = vrt.read(out_shape=(1, height, width), window=window)
 
         if width != tile_size or height != tile_size:
